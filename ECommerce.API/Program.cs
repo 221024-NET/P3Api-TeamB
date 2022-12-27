@@ -17,7 +17,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-var connectionString = builder.Configuration["ECommerce:ConnectionString"];
+var connString = builder.Configuration.GetValue<string>("ConnectionStrings:ecommDB ");
+
 
 builder.Services.AddSingleton<IRepository>
     (sp => new SQLRepository(connectionString, sp.GetRequiredService<ILogger<SQLRepository>>()));
