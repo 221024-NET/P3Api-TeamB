@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerce.Models
 {
-    [Table ("Products", Schema = "ecd")]
+    [Table("Products", Schema = "ecd")]
     public class Product
     {
         [Key]
@@ -26,9 +20,9 @@ namespace ECommerce.Models
         {
             ProductId = id;
             ProductName = name;
-            ProductPrice =price;
-            ProductDescription =description;
-            ProductImage =image;    
+            ProductPrice = price;
+            ProductDescription = description;
+            ProductImage = image;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using ECommerce.Data;
 using ECommerce.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers
 {
@@ -23,8 +21,8 @@ namespace ECommerce.API.Controllers
 
         private readonly IContext _context;
 
-        public ProductController (IContext context, ILogger<ProductController> logger)
-        { 
+        public ProductController(IContext context, ILogger<ProductController> logger)
+        {
             _context = context;
             _logger = logger;
         }
@@ -35,17 +33,17 @@ namespace ECommerce.API.Controllers
         {
             _logger.LogInformation("api/product/{id} triggered");
 
-           
+
             var item = await _context.GetProductById(id);
 
-            if(item == null)
+            if (item == null)
             {
                 return NotFound();
             }
 
             return item;
 
-            
+
             //try
             //{
             //    return Ok(await _repo.GetProductByIdAsync(id));
@@ -63,7 +61,7 @@ namespace ECommerce.API.Controllers
         {
             _logger.LogInformation("api/product triggered");
 
-           
+
             IEnumerable<Product> products = await _context.GetAllProducts();
 
             if (products == null)
@@ -92,15 +90,15 @@ namespace ECommerce.API.Controllers
             List<Product> products = new List<Product>();
             try
             {
-                foreach(Product item in purchaseProducts)
+                foreach (Product item in purchaseProducts)
                 {
                     var tmp = await _context.GetProductById(item.ProductId);
                     //Product tmp = await _repo.GetProductByIdAsync(item.id);
-                     int quantityDiff = tmp.ProductQuantity - item.ProductQuantity;
+                    int quantityDiff = tmp.ProductQuantity - item.ProductQuantity;
                     if (quantityDiff >= 0)
                     {
                         item.ProductQuantity = quantityDiff;
-                        _context.Products.Update(item);
+                        _context.UpdateProduct(item);
 
                         //await _repo.reduceinventorybyidasync(item.id, item.quantity);
                         var updatedTmp = await _context.GetProductById(item.ProductId);

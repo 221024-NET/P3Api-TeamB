@@ -1,15 +1,21 @@
-﻿using System.Runtime.InteropServices;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ECommerce.Models
 {
+    [Table("Users", Schema = "ecd")]
     public class User
     {
-        [Key]
-        public int Id { get; set; } 
+        [Key, Column("UserId")]
+        public int Id { get; set; }
+        [Column("UserFirstName")]
         public string firstName { get; set; }
+
+        [Column("UserLastName")]
         public string lastName { get; set; }
+        [Column("UserEmail")]
         public string email { get; set; }
+        [Column("UserPassword")]
         public string password { get; set; }
 
         public User() { }
