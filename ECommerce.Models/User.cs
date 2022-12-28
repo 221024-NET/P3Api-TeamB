@@ -1,7 +1,12 @@
-﻿namespace ECommerce.Models
+﻿using System.Runtime.InteropServices;
+using System.ComponentModel.DataAnnotations;
+
+namespace ECommerce.Models
 {
     public class User
     {
+        [Key]
+        public int Id { get; set; } 
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string email { get; set; }

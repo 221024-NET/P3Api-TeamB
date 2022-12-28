@@ -17,5 +17,7 @@ namespace ECommerce.Data
         public void DenoteUserModified(User user);
 
         public Task CommitChangesAsync();
+        public  Task<Product> GetProductById(int id);
+        public Task<IEnumerable<Product>> GetAllProducts();
     }
 }

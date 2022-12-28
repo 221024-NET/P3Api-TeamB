@@ -70,12 +70,12 @@ namespace ECommerce.Data
             Product tmp = new Product();
             while (reader.Read())
             {
-                tmp.id = id;
-                tmp.name = reader.GetString(1);
-                tmp.quantity = reader.GetInt32(2);
-                tmp.price = reader.GetDecimal(3);
-                tmp.description = reader.GetString(4);
-                tmp.image = reader.GetString(5);
+                tmp.ProductId = id;
+                tmp.ProductName = reader.GetString(1);
+                tmp.ProductQuantity = reader.GetInt32(2);
+                tmp.ProductPrice = reader.GetDecimal(3);
+                tmp.ProductDescription = reader.GetString(4);
+                tmp.ProductImage = reader.GetString(5);
             }
 
             await connection.CloseAsync();

@@ -2,6 +2,7 @@
 using ECommerce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers
 {
@@ -9,13 +10,23 @@ namespace ECommerce.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IRepository _repo;
+        /*** old ADO stuff Kept in comments for reference ***/
+
+        //private readonly IRepository _repo;
         private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IRepository repo, ILogger<ProductController> logger)
-        {
-            this._repo = repo;
-            this._logger = logger;
+        //public ProductController(IRepository repo, ILogger<ProductController> logger)
+        //{
+        //    this._repo = repo;
+        //    this._logger = logger;
+        //}
+
+        private readonly IContext _context;
+
+        public ProductController (IContext context, ILogger<ProductController> logger)
+        { 
+            _context = context;
+            _logger = logger;
         }
 
 
@@ -23,48 +34,78 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult<Product>> GetOne(int id)
         {
             _logger.LogInformation("api/product/{id} triggered");
-            try
+
+           
+            var item = await _context.GetProductById(id);
+
+            if(item == null)
             {
-                return Ok(await _repo.GetProductByIdAsync(id));
-                _logger.LogInformation("api/product/{id} completed successfully");
+                return NotFound();
             }
-            catch
-            {
-                return BadRequest();
-                _logger.LogWarning("api/product/{id} completed with errors");
-            }
+
+            return item;
+
+            
+            //try
+            //{
+            //    return Ok(await _repo.GetProductByIdAsync(id));
+            //    _logger.LogInformation("api/product/{id} completed successfully");
+            //}
+            //catch
+            //{
+            //    return BadRequest();
+            //    _logger.LogWarning("api/product/{id} completed with errors");
+            //}
         }
 
         [HttpGet]
-        public async Task<ActionResult<Product[]>> GetAll()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAll()
         {
             _logger.LogInformation("api/product triggered");
-            try
+
+           
+            IEnumerable<Product> products = await _context.GetAllProducts();
+
+            if (products == null)
             {
-                return Ok(await _repo.GetAllProductsAsync());
-                _logger.LogInformation("api/product completed successfully");
+                return NotFound();
             }
-            catch
-            {
-                return BadRequest();
-                _logger.LogWarning("api/product completed with errors");
-            }
+
+            return products.ToList();
+
+            //try
+            //{
+            //    return Ok(await _repo.GetAllProductsAsync());
+            //    _logger.LogInformation("api/product completed successfully");
+            //}
+            //catch
+            //{
+            //    return BadRequest();
+            //    _logger.LogWarning("api/product completed with errors");
+            //}
         }
 
         [HttpPatch]
-        public async Task<ActionResult<Product[]>> Purchase([FromBody] ProductDTO[] purchaseProducts)
+        public async Task<ActionResult<Product[]>> Purchase([FromBody] Product[] purchaseProducts)
         {
             _logger.LogInformation("PATCH api/product triggered");
             List<Product> products = new List<Product>();
             try
             {
-                foreach(ProductDTO item in purchaseProducts)
+                foreach(Product item in purchaseProducts)
                 {
-                    Product tmp = await _repo.GetProductByIdAsync(item.id);
-                    if ((tmp.quantity - item.quantity) >= 0)
+                    var tmp = await _context.GetProductById(item.ProductId);
+                    //Product tmp = await _repo.GetProductByIdAsync(item.id);
+                     int quantityDiff = tmp.ProductQuantity - item.ProductQuantity;
+                    if (quantityDiff >= 0)
                     {
-                        await _repo.ReduceInventoryByIdAsync(item.id, item.quantity);
-                        products.Add(await _repo.GetProductByIdAsync(item.id));
+                        item.ProductQuantity = quantityDiff;
+                        _context.Products.Update(item);
+
+                        //await _repo.reduceinventorybyidasync(item.id, item.quantity);
+                        var updatedTmp = await _context.GetProductById(item.ProductId);
+                        Product prod = updatedTmp;
+                        products.Add(prod);
                     }
                     else
                     {

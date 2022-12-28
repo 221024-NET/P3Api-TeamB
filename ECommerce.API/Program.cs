@@ -1,9 +1,11 @@
 using ECommerce.Data;
-using Microsoft.AspNetCore.DataProtection.Repositories;
+
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
 builder.Services.AddCors(options =>
 {
@@ -17,17 +19,20 @@ builder.Services.AddCors(options =>
         });
 });
 
-var connString = builder.Configuration.GetValue<string>("ConnectionStrings:ecommDB ");
 
 
 builder.Services.AddSingleton<IRepository>
-    (sp => new SQLRepository(connectionString, sp.GetRequiredService<ILogger<SQLRepository>>()));
+    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
 
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Emtity framework chage -- Bryon
+builder.Services.AddDbContext<Context>(opt => opt.UseSqlServer(connString));
+builder.Services.AddScoped<IContext>(provider => provider.GetService<Context>());
 
 var app = builder.Build();
 
