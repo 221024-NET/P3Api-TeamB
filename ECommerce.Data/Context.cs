@@ -1,5 +1,10 @@
 ﻿using ECommerce.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Core;
 using Microsoft.EntityFrameworkCore;
+
+
 //using System.Data.Entity;
 //using System.Data.Entity;
 
@@ -62,18 +67,14 @@ namespace ECommerce.Data
         {
             Add(u);
             SaveChanges();
-
-
             return u;
         }
 
-        public async Task<User>GetUserLogin(string password, string email)
+        public async Task<User> GetUserLogin(string password, string email)
         {
-            
+            var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
 
-            var user = Users.Where(usr=>usr.email ==email && usr.password ==password).FirstOrDefault();
-
-            if (user == null) 
+            if (user == null)
             {
                 return null;
             }
