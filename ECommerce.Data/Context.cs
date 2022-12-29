@@ -1,18 +1,21 @@
 ﻿using ECommerce.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+//using System.Data.Entity;
+//using System.Data.Entity;
 
 namespace ECommerce.Data
 {
     public class Context : DbContext, IContext
     {
 
-        public Context(DbContextOptions<Context> options) : base (options)
-        {  }
+        public Context(DbContextOptions<Context> options) : base(options)
+        {
+
+
+
+        }
+
+
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
 
@@ -30,5 +33,53 @@ namespace ECommerce.Data
         {
             return SaveChangesAsync();
         }
+
+        /**Product Table**/
+        public async Task<Product> GetProductById(int id)
+        {
+            return await Products.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProducts()
+        {
+            return await Products.ToListAsync<Product>();
+        }
+
+        public async void UpdateProduct(Product prod)
+        {
+            Update(prod);
+            SaveChanges();
+        }
+
+        /**User Table**/
+
+        public async Task<User> GetUserById(int id)
+        {
+            return await Users.FindAsync(id);
+        }
+
+        public async Task<User> CreateNewUser(User u)
+        {
+            Add(u);
+            SaveChanges();
+
+
+            return u;
+        }
+
+        public async Task<User>GetUserLogin(string password, string email)
+        {
+            
+
+            var user = Users.Where(usr=>usr.email ==email && usr.password ==password).FirstOrDefault();
+
+            if (user == null) 
+            {
+                return null;
+            }
+            return user;
+
+        }
     }
+
 }

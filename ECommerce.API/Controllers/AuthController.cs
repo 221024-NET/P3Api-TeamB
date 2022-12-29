@@ -1,22 +1,26 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
+﻿using ECommerce.Data;
 using ECommerce.Models;
-using ECommerce.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers
 {
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IRepository _repo;
+        /*** old ADO stuff Kept in comments for reference ***/
+       // private readonly IRepository _repo;
         private readonly ILogger<AuthController> _logger;
+        private readonly IContext _context;
 
-        public AuthController(IRepository repo, ILogger<AuthController> logger)
+        //public AuthController(IRepository repo, ILogger<AuthController> logger)
+        //{
+        //    this._repo = repo;
+        //    this._logger = logger;
+        //}
+        public AuthController(IContext context, ILogger<AuthController> logger)
         {
-            this._repo = repo;
-            this._logger = logger;
+            _context = context;
+            _logger = logger;
         }
 
         [Route("auth/register")]
@@ -26,7 +30,8 @@ namespace ECommerce.API.Controllers
             _logger.LogInformation("auth/register triggered");
             try
             {
-                return Ok(await _repo.CreateNewUserAndReturnUserIdAsync(newUser));
+                return CreatedAtAction(nameof(_context.GetUserById), new {id = newUser.Id});
+                    //Ok(await _repo.CreateNewUserAndReturnUserIdAsync(newUser));
                 _logger.LogInformation("auth/register completed successfully");
             }
             catch
@@ -44,7 +49,9 @@ namespace ECommerce.API.Controllers
             _logger.LogInformation("auth/login triggered");
             try
             {
-                return Ok(await _repo.GetUserLoginAsync(LR.password, LR.email));
+                return Ok(await _context.GetUserLogin(LR.password, LR.email));
+                    
+                    //Ok(await _repo.GetUserLoginAsync(LR.password, LR.email));
                 _logger.LogInformation("auth/login completed successfully");
             }
             catch
@@ -57,7 +64,7 @@ namespace ECommerce.API.Controllers
         [Route("auth/logout")]
         [HttpPost]
         public ActionResult Logout()
-        { 
+        {
             _logger.LogInformation("auth/logout triggered");
             return Ok();
             _logger.LogInformation("auth/logout completed successfully");

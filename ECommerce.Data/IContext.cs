@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommerce.Models;
+﻿using ECommerce.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Data
@@ -17,5 +12,18 @@ namespace ECommerce.Data
         public void DenoteUserModified(User user);
 
         public Task CommitChangesAsync();
+
+        /**Product Table**/
+        public Task<Product> GetProductById(int id);
+        public Task<IEnumerable<Product>> GetAllProducts();
+
+        public void UpdateProduct(Product prod);
+
+        /**User Table**/
+        public Task<User> CreateNewUser(User u);
+
+        public Task<User> GetUserById(int id);
+
+        public Task<User> GetUserLogin(string password, string email);
     }
 }
