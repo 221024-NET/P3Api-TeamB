@@ -21,8 +21,8 @@ builder.Services.AddCors(options =>
 
 
 
-builder.Services.AddSingleton<IRepository>
-    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
+//builder.Services.AddSingleton<IRepository>
+//    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
 
 builder.Services.AddControllers();
 
