@@ -24,6 +24,6 @@ namespace ECommerce.Data
 
         public Task<User> GetUserById(int id);
 
-        public Task<User> GetUserLogin(string password, string email);
+        public Task<bool> GetUserLogin(string email, string password);
     }
 }

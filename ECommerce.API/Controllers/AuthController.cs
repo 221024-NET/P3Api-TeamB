@@ -6,6 +6,20 @@ using Microsoft.AspNetCore.Mvc.Core;
 
 namespace ECommerce.API.Controllers
 {
+    public class LoginRequest
+    {
+        public string? email { get; set; }
+        public string? password { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+        public string? firstName { get; set; }
+        public string? lastName { get; set; }
+        public string? email { get; set; }
+        public string? password { get; set; }
+    }
+
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -27,43 +41,50 @@ namespace ECommerce.API.Controllers
 
         [Route("auth/register")]
         [HttpPost]
-        public async Task<ActionResult> Register([FromBody] User newUser)
+        public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
-            // _logger.LogInformation("auth/register triggered");
+            if (request.email == null || request.password == null || request.firstName == null || request.lastName == null)
+            {
+                return BadRequest(new { error = "All fields required" });
+            }
+
+            User newUser = new User(request.firstName, request.lastName, request.email, request.password);
+
             var response = await _context.CreateNewUser(newUser);
+
             if (response == null)
             {
-                return BadRequest("User already exists");
+                return BadRequest("Email already exists");
             }
+
             return CreatedAtAction(nameof(_context.GetUserById), new { id = newUser.Id });
-            //Ok(await _repo.CreateNewUserAndReturnUserIdAsync(newUser));
-            // _logger.LogInformation("auth/register completed successfully");
-            // _logger.LogWarning("auth/register completed with errors");
         }
 
         [Route("auth/login")]
         [HttpPost]
-        public async Task<ActionResult> Login([FromBody] UserDTO LR)
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
-            // _logger.LogInformation("auth/login triggered");
-            var response = await _context.GetUserLogin(LR.password, LR.email);
-
-            if (response == null)
+            if (request.email == null || request.password == null)
             {
-                return NotFound("Invalid login info");
+                return BadRequest(new { error = "Email and password required" });
             }
 
-            return Ok(response);
-            //Ok(await _repo.GetUserLoginAsync(LR.password, LR.email));
-            // _logger.LogInformation("auth/login completed successfully");
+            var userExists = await _context.GetUserLogin(request.email, request.password);
+
+            if (userExists)
+            {
+                return Ok();
+            }
+            else
+            {
+                return Unauthorized(new { error = "Invalid login information" });
+            }
         }
 
         [Route("auth/logout")]
         [HttpPost]
         public ActionResult Logout()
         {
-            // _logger.LogInformation("auth/logout triggered");
-            // _logger.LogInformation("auth/logout completed successfully");
             return Ok();
         }
     }
