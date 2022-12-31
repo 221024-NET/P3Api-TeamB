@@ -58,29 +58,54 @@ namespace ECommerce.Data
 
         /**User Table**/
 
-        public async Task<User> GetUserById(int id)
+        public async Task<User?> GetUserById(int id)
         {
             return await Users.FindAsync(id);
         }
 
-        public async Task<User> CreateNewUser(User u)
+        public async Task<bool> CreateNewUser(User usr)
         {
-            Add(u);
-            SaveChanges();
-            return u;
-        }
+            bool emailTaken = Users.Any(u => u.email == usr.email);
 
-        public async Task<User> GetUserLogin(string password, string email)
-        {
-            var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
-
-            if (user == null)
+            if (emailTaken)
             {
-                return null;
+                return false;
             }
-            return user;
-
+            else
+            {
+                Users.Add(usr);
+                SaveChanges();
+                return true;
+            }
         }
+
+
+        public async Task<User?> GetUserByEmailAndPassword(string email, string password)
+        {
+            email.Trim();
+            password.Trim();
+            return await Users.FirstOrDefaultAsync(u => u.email == email && u.password == password);
+        }
+
+        // public async Task<bool> GetUserLogin(User usr)
+        // {
+        //     return Users.Any(u => u.email == usr.email && u.password == usr.password);
+        // }
+
+
+
+        // public async Task<User> GetUserLogin(string email, string password)
+        // {
+        //     var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
+
+        //     if (user == null)
+        //     {
+        //         throw new Exception("Invalid login information");
+        //     }
+
+        //     return user;
+        // }
+
     }
 
 }
