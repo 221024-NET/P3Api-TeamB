@@ -8,7 +8,7 @@ namespace ECommerce.Models
     {
         [Key, Column("UserId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int userId { get; set; }
 
         [Column("UserFirstName")]
         public string firstName { get; set; }
@@ -29,6 +29,14 @@ namespace ECommerce.Models
         }
 
         public User(string firstName, string lastName, string email, string password)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.password = password;
+        }
+
+        public User(int userId, string firstName, string lastName, string email, string password)
         {
             this.firstName = firstName;
             this.lastName = lastName;

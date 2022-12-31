@@ -1,8 +1,10 @@
-﻿using ECommerce.Data;
+﻿using System.Data.SqlClient;
+using ECommerce.Data;
 using ECommerce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.API.Controllers
 {
@@ -43,21 +45,25 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
+            ActionResult result = Ok();
+
             if (request.email == null || request.password == null || request.firstName == null || request.lastName == null)
             {
                 return BadRequest(new { error = "All fields required" });
             }
 
             User newUser = new User(request.firstName, request.lastName, request.email, request.password);
+            bool success = await _context.CreateNewUser(newUser);
 
-            var response = await _context.CreateNewUser(newUser);
-
-            if (response == null)
+            if (!success)
             {
-                return BadRequest("Email already exists");
+                result = BadRequest("Email already exists");
+                return result;
             }
 
-            return CreatedAtAction(nameof(_context.GetUserById), new { id = newUser.Id });
+            newUser = await _context.GetUserByEmailAndPassword(newUser.email, newUser.password);
+            result = Ok(newUser);
+            return result;
         }
 
         [Route("auth/login")]
@@ -69,15 +75,15 @@ namespace ECommerce.API.Controllers
                 return BadRequest(new { error = "Email and password required" });
             }
 
-            var userExists = await _context.GetUserLogin(request.email, request.password);
+            var user = await _context.GetUserByEmailAndPassword(request.email.Trim(), request.password.Trim());
 
-            if (userExists)
+            if (user == null)
             {
-                return Ok();
+                return Unauthorized(new { error = "Invalid login information" });
             }
             else
             {
-                return Unauthorized(new { error = "Invalid login information" });
+                return Ok(user);
             }
         }
 

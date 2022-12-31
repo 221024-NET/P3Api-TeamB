@@ -63,25 +63,28 @@ namespace ECommerce.Data
             return await Users.FindAsync(id);
         }
 
-        public async Task<User> CreateNewUser(User usr)
+        public async Task<bool> CreateNewUser(User usr)
         {
             bool emailTaken = Users.Any(u => u.email == usr.email);
 
             if (emailTaken)
             {
-                return null;
+                return false;
             }
             else
             {
-                Add(usr);
+                Users.Add(usr);
                 SaveChanges();
-                return usr;
+                return true;
             }
         }
 
-        public async Task<bool> GetUserLogin(string email, string password)
+
+        public async Task<User?> GetUserByEmailAndPassword(string email, string password)
         {
-            return Users.Any(u => u.email == email && u.password == password);
+            email.Trim();
+            password.Trim();
+            return await Users.FirstOrDefaultAsync(u => u.email == email && u.password == password);
         }
 
         // public async Task<bool> GetUserLogin(User usr)
