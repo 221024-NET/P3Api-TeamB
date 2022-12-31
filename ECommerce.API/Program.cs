@@ -21,8 +21,8 @@ builder.Services.AddCors(options =>
 
 
 
-builder.Services.AddSingleton<IRepository>
-    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
+//builder.Services.AddSingleton<IRepository>
+//    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
 
 builder.Services.AddControllers();
 
@@ -40,10 +40,19 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+   {
+       options.SwaggerEndpoint("/swagger/v1/swagger.json", "EComm-API");
+   });
 }
 
-app.UseCors();
+app.UseCors(options =>
+{
+    options.WithOrigins("https://localhost:4200")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+});
 
 app.UseHttpsRedirection();
 

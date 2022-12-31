@@ -1,5 +1,10 @@
 ﻿using ECommerce.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Core;
 using Microsoft.EntityFrameworkCore;
+
+
 //using System.Data.Entity;
 //using System.Data.Entity;
 
@@ -53,31 +58,40 @@ namespace ECommerce.Data
 
         /**User Table**/
 
-        public async Task<User> GetUserById(int id)
+        public async Task<User?> GetUserById(int id)
         {
             return await Users.FindAsync(id);
         }
 
-        public async Task<User> CreateNewUser(User u)
+        public async Task<bool> CreateNewUser(User usr)
         {
-            Add(u);
-            SaveChanges();
+            bool emailTaken = Users.Any(u => u.email == usr.email);
 
-
-            return u;
+            if (emailTaken)
+            {
+                return false;
+            }
+            else
+            {
+                Users.Add(usr);
+                SaveChanges();
+                return true;
+            }
         }
 
-        public async Task<User>GetUserLogin(string password, string email)
-        {
-            
 
-            var user = Users.Where(usr=>usr.email ==email && usr.password ==password).FirstOrDefault();
+          // public async Task<User> GetUserLogin(string email, string password)
+        // {
+        //     var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
 
-            if (user == null) 
-            {
-                return null;
-            }
-            return user;
+        //     if (user == null)
+        //     {
+        //         throw new Exception("Invalid login information");
+        //     }
+
+        //     return user;
+        // }
+
 
         }
 
@@ -96,6 +110,7 @@ namespace ECommerce.Data
             await CommitChangesAsync();
             return user;
         }
+
     }
 
 }

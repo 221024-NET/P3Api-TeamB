@@ -20,11 +20,12 @@ namespace ECommerce.Data
         public void UpdateProduct(Product prod);
 
         /**User Table**/
-        public Task<User> CreateNewUser(User u);
+        public Task<bool> CreateNewUser(User usr);
 
-        public Task<User> GetUserById(int id);
+        public Task<User?> GetUserById(int id);
 
-        public Task<User> GetUserLogin(string password, string email);
+        public Task<User?> GetUserByEmailAndPassword(string email, string password);
         public Task<User> UpdateUserPassword(string password, string email);
+
     }
 }
