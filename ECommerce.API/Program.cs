@@ -1,9 +1,11 @@
 using ECommerce.Data;
-using Microsoft.AspNetCore.DataProtection.Repositories;
+
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
 builder.Services.AddCors(options =>
 {
@@ -17,10 +19,10 @@ builder.Services.AddCors(options =>
         });
 });
 
-var connectionString = builder.Configuration["ECommerce:ConnectionString"];
 
-builder.Services.AddSingleton<IRepository>
-    (sp => new SQLRepository(connectionString, sp.GetRequiredService<ILogger<SQLRepository>>()));
+
+//builder.Services.AddSingleton<IRepository>
+//    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
 
 builder.Services.AddControllers();
 
@@ -28,16 +30,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Emtity framework chage -- Bryon
+builder.Services.AddDbContext<Context>(opt => opt.UseSqlServer(connString));
+builder.Services.AddScoped<IContext>(provider => provider.GetService<Context>());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+   {
+       options.SwaggerEndpoint("/swagger/v1/swagger.json", "EComm-API");
+   });
 }
 
-app.UseCors();
+app.UseCors(options =>
+{
+    options.WithOrigins("https://localhost:4200")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+});
 
 app.UseHttpsRedirection();
 
