@@ -78,5 +78,21 @@ namespace ECommerce.Data
             password.Trim();
             return await Users.FirstOrDefaultAsync(u => u.email == email && u.password == password);
         }
+
+        public async Task<User>UpdateUserPassword(string password, string email)
+        {
+            var user = await Users.Where(u => u.email == email).FirstOrDefaultAsync();
+
+            // If no user was found, return null
+            if (user == null) return null;
+
+            // This statement returns null if the password submitted to the request is not a different password
+            if (user.password == password) return null;
+
+            user.password = password;
+            DenoteUserModified(user);
+            await CommitChangesAsync();
+            return user;
+        }
     }
 }
