@@ -25,5 +25,7 @@ namespace ECommerce.Data
         public Task<User?> GetUserById(int id);
 
         public Task<User?> GetUserByEmailAndPassword(string email, string password);
+        public Task<User> UpdateUserPassword(string password, string email);
+
     }
 }

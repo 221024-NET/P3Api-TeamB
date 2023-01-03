@@ -80,21 +80,7 @@ namespace ECommerce.Data
         }
 
 
-        public async Task<User?> GetUserByEmailAndPassword(string email, string password)
-        {
-            email.Trim();
-            password.Trim();
-            return await Users.FirstOrDefaultAsync(u => u.email == email && u.password == password);
-        }
-
-        // public async Task<bool> GetUserLogin(User usr)
-        // {
-        //     return Users.Any(u => u.email == usr.email && u.password == usr.password);
-        // }
-
-
-
-        // public async Task<User> GetUserLogin(string email, string password)
+          // public async Task<User> GetUserLogin(string email, string password)
         // {
         //     var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
 
@@ -105,6 +91,25 @@ namespace ECommerce.Data
 
         //     return user;
         // }
+
+
+        }
+
+        public async Task<User>UpdateUserPassword(string password, string email)
+        {
+            var user = await Users.Where(u => u.email == email).FirstOrDefaultAsync();
+
+            // If no user was found, return null
+            if (user == null) return null;
+
+            // This statement returns null if the password submitted to the request is not a different password
+            if (user.password == password) return null;
+
+            user.password = password;
+            DenoteUserModified(user);
+            await CommitChangesAsync();
+            return user;
+        }
 
     }
 
