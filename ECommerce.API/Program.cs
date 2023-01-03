@@ -1,5 +1,4 @@
 using ECommerce.Data;
-
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +17,6 @@ builder.Services.AddCors(options =>
                    .AllowCredentials();
         });
 });
-
-
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
