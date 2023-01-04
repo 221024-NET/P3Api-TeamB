@@ -3,9 +3,13 @@
     "apis1": {
       "type": "apis"
     },
+    "apis2": {
+      "type": "apis"
+    },
     "mssql2": {
       "type": "mssql",
-      "connectionId": "ecommDB2"
+      "connectionId": "ConnectionStrings:ecommDB",
+      "dynamicId": null
     }
   }
 }
