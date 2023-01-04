@@ -1,3 +1,6 @@
+# This yml file was generated from an unknown source, probably from a github template, but possibly from azure web services.
+# It succeeds, but the database doesnt connect to the website, so either we need a different deployment or different settings.
+
 # This workflow will build and push a .NET Core app to an Azure Web App when a commit is pushed to your default branch.
 #
 # This workflow assumes you have already created the target Azure App Service web app.
