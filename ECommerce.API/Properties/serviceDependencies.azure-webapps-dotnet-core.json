@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "apis2": {
+      "apiEndpoint": "https://tentacle-service-api.azure-api.net/",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/tentacle-service-api/apis/ECommerceAPI",
+      "type": "apis.azure"
+    },
+    "mssql2": {
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/tentaclesdbserver/databases/tentacles_api_db",
+      "type": "mssql.azure",
+      "connectionId": "ecommDB2"
+    }
+  }
+}
