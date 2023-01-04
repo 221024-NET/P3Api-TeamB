@@ -8,8 +8,7 @@
     },
     "mssql2": {
       "type": "mssql",
-      "connectionId": "ConnectionStrings:ecommDB",
-      "dynamicId": null
+      "connectionId": "ConnectionStrings:ecommDB"
     }
   }
 }

@@ -9,7 +9,7 @@
       "secretStore": "AzureAppSettings",
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/tentaclesdbserver/databases/tentacles_api_db",
       "type": "mssql.azure",
-      "connectionId": "ecommDB2"
+      "connectionId": "ConnectionStrings:ecommDB"
     }
   }
 }
