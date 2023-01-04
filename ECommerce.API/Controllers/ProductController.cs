@@ -83,27 +83,28 @@ namespace ECommerce.API.Controllers
             //}
         }
 
+
         [HttpPatch]
-        public async Task<ActionResult<Product[]>> Purchase([FromBody] Product[] purchaseProducts)
+        public async Task<ActionResult<Product[]>> Purchase([FromBody] ProductDTO[] purchaseProducts)
         {
             _logger.LogInformation("PATCH api/product triggered");
             List<Product> products = new List<Product>();
             try
             {
-                foreach (Product item in purchaseProducts)
+                foreach (ProductDTO item in purchaseProducts)
                 {
-                    var tmp = await _context.GetProductById(item.ProductId);
+                    var tmp = await _context.GetProductById(item.id);
                     //Product tmp = await _repo.GetProductByIdAsync(item.id);
-                    int quantityDiff = tmp.ProductQuantity - item.ProductQuantity;
+                    int quantityDiff = tmp.ProductQuantity - item.quantity;
                     if (quantityDiff >= 0)
                     {
-                        item.ProductQuantity = quantityDiff;
-                        _context.UpdateProduct(item);
-
                         //await _repo.reduceinventorybyidasync(item.id, item.quantity);
-                        var updatedTmp = await _context.GetProductById(item.ProductId);
+                        var updatedTmp = await _context.GetProductById(item.id);
                         Product prod = updatedTmp;
+                        prod.ProductQuantity = quantityDiff;
+                        _context.UpdateProduct(prod);
                         products.Add(prod);
+                        
                     }
                     else
                     {
@@ -119,9 +120,8 @@ namespace ECommerce.API.Controllers
                 _logger.LogWarning("PATCH api/product completed with errors");
 
             }
-
-
         }
+
 
     }
 }
