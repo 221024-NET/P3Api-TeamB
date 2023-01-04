@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using ECommerce.Data;
 using ECommerce.Models;
 using Microsoft.AspNetCore.Http;
@@ -25,20 +26,12 @@ namespace ECommerce.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        /*** old ADO stuff Kept in comments for reference ***/
-        // private readonly IRepository _repo;
         private readonly ILogger<AuthController> _logger;
         private readonly IContext _context;
 
-        //public AuthController(IRepository repo, ILogger<AuthController> logger)
-        //{
-        //    this._repo = repo;
-        //    this._logger = logger;
-        //}
-        public AuthController(IContext context, ILogger<AuthController> logger)
+        public AuthController(IContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         [Route("auth/register")]
@@ -47,9 +40,12 @@ namespace ECommerce.API.Controllers
         {
             ActionResult result = Ok();
 
-            if (request.email == null || request.password == null || request.firstName == null || request.lastName == null)
+            // Check for invalid email format
+            var regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
+            var isValid = regex.IsMatch(request.email);
+            if (!isValid)
             {
-                return BadRequest(new { error = "All fields required" });
+                return BadRequest("Invalid email format");
             }
 
             User newUser = new User(request.firstName, request.lastName, request.email, request.password);
@@ -70,20 +66,32 @@ namespace ECommerce.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
-            if (request.email == null || request.password == null)
-            {
-                return BadRequest(new { error = "Email and password required" });
-            }
-
             var user = await _context.GetUserByEmailAndPassword(request.email.Trim(), request.password.Trim());
 
             if (user == null)
             {
-                return Unauthorized(new { error = "Invalid login information" });
+                return BadRequest("Invalid login information");
             }
             else
             {
                 return Ok(user);
+            }
+        }
+
+        [Route("auth/reset-password")]
+        [HttpPatch]
+        public async Task<ActionResult<User>> resetPassword([FromBody] UserDTO LR)
+        {
+            _logger.LogInformation("auth/reset-password triggered");
+            try
+            {
+                _logger.LogInformation("auth/reset-password executed successfully");
+                return Ok(await _context.UpdateUserPassword(LR.password, LR.email));
+            }
+            catch
+            {
+                _logger.LogWarning("auth/reset-password completed with errors");
+                return BadRequest();
             }
         }
 

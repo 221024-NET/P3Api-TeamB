@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Core;
 using Microsoft.EntityFrameworkCore;
-
-
 //using System.Data.Entity;
 //using System.Data.Entity;
 
@@ -13,13 +11,9 @@ namespace ECommerce.Data
     public class Context : DbContext, IContext
     {
 
-        public Context(DbContextOptions<Context> options) : base(options)
-        {
+        public Context(DbContextOptions<Context> options) : base(options) {}
 
-
-
-        }
-
+        public Context() {}
 
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
@@ -57,7 +51,6 @@ namespace ECommerce.Data
         }
 
         /**User Table**/
-
         public async Task<User?> GetUserById(int id)
         {
             return await Users.FindAsync(id);
@@ -79,7 +72,6 @@ namespace ECommerce.Data
             }
         }
 
-
         public async Task<User?> GetUserByEmailAndPassword(string email, string password)
         {
             email.Trim();
@@ -87,25 +79,20 @@ namespace ECommerce.Data
             return await Users.FirstOrDefaultAsync(u => u.email == email && u.password == password);
         }
 
-        // public async Task<bool> GetUserLogin(User usr)
-        // {
-        //     return Users.Any(u => u.email == usr.email && u.password == usr.password);
-        // }
+        public async Task<User>UpdateUserPassword(string password, string email)
+        {
+            var user = await Users.Where(u => u.email == email).FirstOrDefaultAsync();
 
+            // If no user was found, return null
+            if (user == null) return null;
 
+            // This statement returns null if the password submitted to the request is not a different password
+            if (user.password == password) return null;
 
-        // public async Task<User> GetUserLogin(string email, string password)
-        // {
-        //     var user = Users.Where(usr => usr.email == email && usr.password == password).FirstOrDefault();
-
-        //     if (user == null)
-        //     {
-        //         throw new Exception("Invalid login information");
-        //     }
-
-        //     return user;
-        // }
-
+            user.password = password;
+            DenoteUserModified(user);
+            await CommitChangesAsync();
+            return user;
+        }
     }
-
 }
