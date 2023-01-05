@@ -7,19 +7,42 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
+/*var githubapp = "_Githubapp";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: githubapp,
+                      policy =>
+                      {
+                          policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB");
+                      });
+});*/
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB/")
+            policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB")//, "http://localhost:4200")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
         });
 });
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "MyPolicy",
+                policy =>
+                {
+                    policy.WithOrigins("http://example.com",
+                        "http://www.contoso.com",
+                        "https://cors1.azurewebsites.net",
+                        "https://cors3.azurewebsites.net",
+                        "https://localhost:44398",
+                        "https://localhost:5001")
+                            .WithMethods("PUT", "DELETE", "GET");
+                });
+});
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
@@ -37,19 +60,35 @@ builder.Services.AddScoped<IContext>(provider => provider.GetService<Context>())
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
    {
        options.SwaggerEndpoint("/swagger/v1/swagger.json", "EComm-API");
    });
-}*/
+}
 
-app.UseCors();
-
+//if (app.Environment.IsProduction())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI(options =>
+//    {
+//        options.SwaggerEndpoint("/swagger/v1/swagger.json", "EComm-API");
+//    });
+//}
 
 app.UseHttpsRedirection();
+
+// second option
+/*app.UseCors(policy => policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            //.AllowAnyOrigin()
+                            .SetIsOriginAllowed(origin => true)
+                            //.AllowCredentials()
+);*/
+//app.UseCors(githubapp);
+app.UseCors();
 
 app.UseAuthorization();
 
