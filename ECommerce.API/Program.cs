@@ -7,17 +7,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
-/*var githubapp = "_Githubapp";
+var githubapp = "_GithubAppP3TB";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: githubapp,
                       policy =>
                       {
-                          policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB");
+                          policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB")
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
                       });
-});*/
+});
 
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
@@ -25,10 +27,10 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB")//, "http://localhost:4200")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
-                   .AllowCredentials();
+//                   .AllowCredentials()
+                   ;
         });
-});
-
+});*/
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
