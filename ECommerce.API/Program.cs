@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
-var githubapp = "_GithubAppP3TB";
+/*var githubapp = "_GithubAppP3TB";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: githubapp,
@@ -17,9 +17,9 @@ builder.Services.AddCors(options =>
                                 .AllowAnyMethod()
                                 .AllowAnyHeader();
                       });
-});
+});*/
 
-/*builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 //                   .AllowCredentials()
                    ;
         });
-});*/
+});
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
