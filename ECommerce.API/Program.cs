@@ -12,7 +12,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB/")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
@@ -46,13 +46,8 @@ var app = builder.Build();
    });
 }*/
 
-app.UseCors(options =>
-{
-    options.WithOrigins("https://localhost:4200")
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           .AllowCredentials();
-});
+app.UseCors();
+
 
 app.UseHttpsRedirection();
 
