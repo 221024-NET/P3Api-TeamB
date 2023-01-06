@@ -80,17 +80,14 @@ namespace ECommerce.API.Controllers
 
         [Route("auth/reset-password")]
         [HttpPatch]
-        public async Task<ActionResult<User>> resetPassword([FromBody] UserDTO LR)
+        public async Task<ActionResult<User>> ResetPassword([FromBody] UserDTO LR)
         {
-            _logger.LogInformation("auth/reset-password triggered");
             try
             {
-                _logger.LogInformation("auth/reset-password executed successfully");
                 return Ok(await _context.UpdateUserPassword(LR.password, LR.email));
             }
             catch
             {
-                _logger.LogWarning("auth/reset-password completed with errors");
                 return BadRequest();
             }
         }
