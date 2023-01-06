@@ -7,30 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
-/*var githubapp = "_GithubAppP3TB";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: githubapp,
-                      policy =>
-                      {
-                          policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB")
-                                .AllowAnyMethod()
-                                .AllowAnyHeader();
-                      });
-});*/
-
-builder.Services.AddCors(options =>
+/*builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB","http://localhost:4200")
+        policy.WithOrigins("https://ecommerceappteamb.github.io")//,"http://localhost:4200")
                    .AllowAnyMethod()
                    .AllowAnyHeader()
 //                   .AllowCredentials()
                    ;
         });
-});
+});*/
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
@@ -44,6 +32,21 @@ builder.Services.AddSwaggerGen();
 //Emtity framework chage -- Bryon
 builder.Services.AddDbContext<Context>(opt => opt.UseSqlServer(connString));
 builder.Services.AddScoped<IContext>(provider => provider.GetService<Context>());
+
+var githubapp = "_GithubAppP3TB";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: githubapp,
+                      policy =>
+                      {
+                          //policy.WithOrigins("https://ecommerceappteamb.github.io")//P3UI-TeamB")
+                          policy.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .WithExposedHeaders("Access-Control-Allow-Origin");
+                                
+                      });
+});
 
 var app = builder.Build();
 
@@ -75,11 +78,12 @@ app.UseHttpsRedirection();
                             .SetIsOriginAllowed(origin => true)
                             //.AllowCredentials()
 );*/
-//app.UseCors(githubapp);
-app.UseCors();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(githubapp);
+//app.UseCors();
 
 app.Run();
