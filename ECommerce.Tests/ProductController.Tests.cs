@@ -97,9 +97,9 @@ namespace ECommerce.Tests
                     p.ProductQuantity = 1;
                 }).Verifiable();
             ProductController controller = new ProductController(cMock.Object);
-            Product newProd = new Product { ProductId = 1, ProductName = "Banana", ProductQuantity = 10, ProductPrice = 3, ProductDescription = "Oooh banana!", ProductImage = "" };
-            Product newProd2 = new Product { ProductId = 2, ProductName = "Honeydew", ProductQuantity = 5, ProductPrice = 5, ProductDescription = "The best fruit", ProductImage = "" };
-            Product[] purchasedProducts = new Product[2];
+            ProductDTO newProd = new ProductDTO { id = 1, quantity = 10 };
+            ProductDTO newProd2 = new ProductDTO { id = 2, quantity = 5 };
+            ProductDTO[] purchasedProducts = new ProductDTO[2];
             purchasedProducts[0] = newProd;
             purchasedProducts[1] = newProd2;
 
@@ -119,9 +119,9 @@ namespace ECommerce.Tests
                     p.ProductQuantity = p.ProductQuantity - 1;
                 }).Verifiable();
             ProductController controller = new ProductController(cMock.Object);
-            Product newProd = new Product { ProductId = 1, ProductName = "Banana", ProductQuantity = 1, ProductPrice = 3, ProductDescription = "Oooh banana!", ProductImage = "" };
-            Product newProd2 = new Product { ProductId = 2, ProductName = "Honeydew", ProductQuantity = 5, ProductPrice = 5, ProductDescription = "The best fruit", ProductImage = "" };
-            Product[] purchasedProducts = new Product[2];
+            ProductDTO newProd = new ProductDTO(1, 1);
+            ProductDTO newProd2 = new ProductDTO(2, 5);
+            ProductDTO[] purchasedProducts = new ProductDTO[2];
             purchasedProducts[0] = newProd;
             purchasedProducts[1] = newProd2;
 
@@ -141,9 +141,9 @@ namespace ECommerce.Tests
                     p.ProductQuantity = p.ProductQuantity - 1;
                 }).Verifiable();
             ProductController controller = new ProductController(cMock.Object);
-            Product newProd = new Product { ProductId = 5, ProductName = "Orange", ProductQuantity = 10, ProductPrice = 3, ProductDescription = "Orange you glad I didn't make this joke again?", ProductImage = "" };
-            Product newProd2 = new Product { ProductId = 6, ProductName = "Canteloupe", ProductQuantity = 5, ProductPrice = 5, ProductDescription = "An inferior honeydew", ProductImage = "" };
-            Product[] purchasedProducts = new Product[2];
+            ProductDTO newProd = new ProductDTO { id = 5, quantity = 10 };
+            ProductDTO newProd2 = new ProductDTO { id = 6, quantity = 5 };
+            ProductDTO[] purchasedProducts = new ProductDTO[2];
             purchasedProducts[0] = newProd;
             purchasedProducts[1] = newProd2;
 
@@ -163,9 +163,9 @@ namespace ECommerce.Tests
                     p.ProductQuantity = p.ProductQuantity - 1;
                 }).Verifiable();
             ProductController controller = new ProductController(cMock.Object);
-            Product newProd = new Product { ProductId = 5, ProductName = "Orange", ProductQuantity = 10, ProductPrice = 3, ProductDescription = "Orange you glad I didn't make this joke again?", ProductImage = "" };
-            Product newProd2 = new Product { ProductId = 6, ProductName = "Canteloupe", ProductQuantity = 5, ProductPrice = 5, ProductDescription = "An inferior honeydew", ProductImage = "" };
-            Product[] purchasedProducts = new Product[2];
+            ProductDTO newProd = new ProductDTO { id = 5, quantity = 10 };
+            ProductDTO newProd2 = new ProductDTO { id = 6, quantity = 5 };
+            ProductDTO[] purchasedProducts = new ProductDTO[2];
             purchasedProducts[0] = newProd;
             purchasedProducts[1] = newProd2;
 
