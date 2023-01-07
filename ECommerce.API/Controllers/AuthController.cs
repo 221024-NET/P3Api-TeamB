@@ -80,7 +80,7 @@ namespace ECommerce.API.Controllers
 
         [Route("auth/reset-password")]
         [HttpPatch]
-        public async Task<ActionResult<User>> resetPassword([FromBody] UserDTO LR)
+        public async Task<ActionResult<User>> ResetPassword([FromBody] UserDTO LR)
         {
             try
             {

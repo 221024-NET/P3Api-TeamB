@@ -6,105 +6,173 @@ using ECommerce.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using Xunit;
 
 namespace ECommerce.Tests
 {
-    public class AuthControllerTests : IClassFixture<AuthControllerTestFixture>
+    public class AuthControllerTests
     {
-        private readonly IContext _context;
-
-        public AuthControllerTests(AuthControllerTestFixture fixture)
+        [Fact]
+        public void Register_SendsGoodRequestWhenProvidedProperNewRegisterRequest()
         {
-            _context = fixture.Context;
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.CreateNewUser(It.IsAny<User>())).Returns(Task.FromResult<Boolean>(true));
+            cMock.Setup(m => m.GetUserByEmailAndPassword("timtest@gmail.com", "testing")).Returns(Task.FromResult(new User { firstName = "Timmy", lastName = "Test", email = "timtest@gmail.com", password = "testing" }));
+            AuthController controller = new AuthController(cMock.Object);
+            RegisterRequest regReq = new RegisterRequest { firstName = "Timmy", lastName = "Test", email = "timtest@gmail.com", password = "testing" };
 
-            var config = new ConfigurationBuilder()
-                .AddUserSecrets<AuthControllerTests>()
-                .Build();
+            var result = controller.Register(regReq);
 
-            string connString = config.GetConnectionString("ecommDB");
-
-            var options = new DbContextOptionsBuilder<Context>()
-                .UseSqlServer(connString)
-                .Options;
-
-            _context = new Context(options);
+            Assert.IsType<OkObjectResult>(result.Result);
         }
 
         [Fact]
-        public async Task Test_Register_ReturnsOk_OnSuccess()
+        public void Register_SendsBadRequestWhenRegisterRequestHasImproperEmail()
         {
-            // Arrange
-            string randomString = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[+/]", "");
-            string email = $"{randomString}@example.com";
+            var cMock = new Mock<IContext>();
+            AuthController controller = new AuthController(cMock.Object);
+            RegisterRequest regReq = new RegisterRequest { firstName = "Timmy", lastName = "Test", email = "timtest", password = "testing" };
 
-            var request = new RegisterRequest
-            {
-                firstName = "Test",
-                lastName = "User",
-                email = email,
-                password = "password"
-            };
-            var controller = new AuthController(_context);
+            var result = controller.Register(regReq);
 
-            // Act
-            var result = await controller.Register(request);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result);
-
-            // New test case:
-            var request2 = new RegisterRequest
-            {
-                firstName = "Test",
-                lastName = "User",
-                email = email, // Assume this email already exists in the database
-                password = "password"
-            };
-            var result2 = await controller.Register(request2);
-            Assert.IsType<BadRequestObjectResult>(result2);
-            Assert.Equal("Email already exists", ((BadRequestObjectResult)result2).Value);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         [Fact]
-        public async Task Test_Login_ReturnsOk_OnSuccess()
+        public void Register_SendsBadRequestWhenRegisterRequestHasExistingEmail()
         {
-            // Arrange
-            var request = new LoginRequest
-            {
-                email = "brianna@gmail.com",
-                password = "brianna"
-            };
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.CreateNewUser(It.IsAny<User>())).Returns(Task.FromResult<Boolean>(false));
+            AuthController controller = new AuthController(cMock.Object);
+            RegisterRequest regReq = new RegisterRequest { email = "test@gmail.com", password = "pa55", firstName = "Jon", lastName = "Dow" };
 
-            var controller = new AuthController(_context);
+            var result = controller.Register(regReq);
 
-            // Act
-            var result = await controller.Login(request);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         [Fact]
-        public async Task Test_Login_ReturnsBadRequest_OnInvalidCredentials()
+        public void Login_SendsGoodRequestWhenProvidedProperUserCredentials()
         {
-            // Arrange
-            string randomString = Regex.Replace(Convert.ToBase64String(Guid.NewGuid().ToByteArray()), "[+/]", "");
-            string email = $"{randomString}@example.com";
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.GetUserByEmailAndPassword("test@gmail.com", "pass")).Returns(Task.FromResult(new User { userId = 1, email = "test@gmail.com", password = "pass", firstName = "John", lastName = "Doe"}));
+            AuthController controller = new AuthController(cMock.Object);
+            LoginRequest logReq = new LoginRequest { email = "test@gmail.com", password = "pass" };
 
-            var request = new LoginRequest
-            {
-                email = email,
-                password = "incorrect"
-            };
-            var controller = new AuthController(_context);
+            var result = controller.Login(logReq);
 
-            // Act
-            var result = await controller.Login(request);
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
 
-            // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Invalid login information", ((BadRequestObjectResult)result).Value);
+        [Fact]
+        public void Login_SendsBadRequestWhenEmailIsCorrectButPasswordIsNot()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.GetUserByEmailAndPassword("test@gmail.com", "past")).Returns(Task.FromResult<User>(null));
+            AuthController controller = new AuthController(cMock.Object);
+            LoginRequest logReq = new LoginRequest { email = "test@gmail.com", password = "past" };
+
+            var result = controller.Login(logReq);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void Login_SendsBadRequestWhenPasswordIsCorrectButEmailIsNot()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.GetUserByEmailAndPassword("tess@gmail.com", "pass")).Returns(Task.FromResult<User>(null));
+            AuthController controller = new AuthController(cMock.Object);
+            LoginRequest logReq = new LoginRequest { email = "tess@gmail.com", password = "pass" };
+
+            var result = controller.Login(logReq);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void Login_SendsBadRequestWhenProperRequestButDbIsEmpty()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.GetUserByEmailAndPassword("test@gmail.com", "pass")).Returns(Task.FromResult<User>(null));
+            AuthController controller = new AuthController(cMock.Object);
+            LoginRequest logReq = new LoginRequest { email = "test@gmail.com", password = "pass" };
+
+            var result = controller.Login(logReq);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void ResetPassword_SendsNewUserObjectWhenProvidedUserAndNewPassword()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.UpdateUserPassword("test@gmail.com", "newPass")).Returns(Task.FromResult(new User { userId = 1, email = "test@gmail.com", password = "newPass", firstName = "John", lastName = "Doe" }));
+            cMock.Setup(m => m.CommitChangesAsync());
+            cMock.Setup(m => m.DenoteUserModified(It.IsAny<User>()));
+            AuthController controller = new AuthController(cMock.Object);
+            UserDTO passReq = new UserDTO { email = "test@gmail.com", password = "newPass" };
+
+            var result = controller.ResetPassword(passReq);
+
+            Assert.IsType<User>(result.Result.Value);
+        }
+
+        [Fact]
+        public void ResetPassword_SendsNullObjectWhenProvidedUserNotInDb()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.UpdateUserPassword("best@gmail.com", "pass")).Returns(Task.FromResult<User>(null));
+            cMock.Setup(m => m.CommitChangesAsync());
+            cMock.Setup(m => m.DenoteUserModified(It.IsAny<User>()));
+            AuthController controller = new AuthController(cMock.Object);
+            UserDTO passReq = new UserDTO { email = "best@gmail.com", password = "pass" };
+
+            var result = controller.ResetPassword(passReq);
+
+            Assert.Null(result.Result.Value);
+        }
+
+        [Fact]
+        public void ResetPassword_SendsNullObjectWhenPasswordInRequestIsNotChanged()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.UpdateUserPassword("test@gmail.com", "pass")).Returns(Task.FromResult<User>(null));
+            cMock.Setup(m => m.CommitChangesAsync());
+            cMock.Setup(m => m.DenoteUserModified(It.IsAny<User>()));
+            AuthController controller = new AuthController(cMock.Object);
+            UserDTO passReq = new UserDTO { email = "test@gmail.com", password = "pass" };
+
+            var result = controller.ResetPassword(passReq);
+
+            Assert.Null(result.Result.Value);
+        }
+
+        [Fact]
+        public void ResetPassword_SendsNullObjectWhenRequestIsGoodButDbIsEmpty()
+        {
+            var cMock = new Mock<IContext>();
+            cMock.Setup(m => m.UpdateUserPassword("test@gmail.com", "newPass")).Returns(Task.FromResult<User>(null));
+            cMock.Setup(m => m.CommitChangesAsync());
+            cMock.Setup(m => m.DenoteUserModified(It.IsAny<User>()));
+            AuthController controller = new AuthController(cMock.Object);
+            UserDTO passReq = new UserDTO("test@gmail.com", "newPass");
+
+            var result = controller.ResetPassword(passReq);
+
+            Assert.Null(result.Result.Value);
+        }
+
+        [Fact]
+        public void Logout_SendsGoodReponseAlways()
+        {
+            var cMock = new Mock<IContext>();
+            AuthController controller = new AuthController(cMock.Object);
+
+            var result = controller.Logout();
+
+            Assert.IsType<OkResult>(result);
         }
     }
 }
