@@ -1,6 +1,7 @@
 ﻿using ECommerce.Data;
 using ECommerce.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ECommerce.API.Controllers
 {
@@ -11,7 +12,7 @@ namespace ECommerce.API.Controllers
         /*** old ADO stuff Kept in comments for reference ***/
 
         //private readonly IRepository _repo;
-        private readonly ILogger<ProductController> _logger;
+        //private readonly ILogger<ProductController> _logger;
 
         //public ProductController(IRepository repo, ILogger<ProductController> logger)
         //{
@@ -20,18 +21,19 @@ namespace ECommerce.API.Controllers
         //}
 
         private readonly IContext _context;
+        readonly ILogger _logger;
 
-        public ProductController(IContext context, ILogger<ProductController> logger)
+        public ProductController(IContext context, ILogger logger = null)
         {
             _context = context;
-            _logger = logger;
+            _logger = logger ?? NullLogger.Instance;
         }
 
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetOne(int id)
         {
-            _logger.LogInformation("api/product/{id} triggered");
+            //_logger.LogInformation("api/product/{id} triggered");
 
 
             var item = await _context.GetProductById(id);
@@ -59,7 +61,7 @@ namespace ECommerce.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAll()
         {
-            _logger.LogInformation("api/product triggered");
+            //_logger.LogInformation("api/product triggered");
 
 
             IEnumerable<Product> products = await _context.GetAllProducts();
@@ -87,7 +89,7 @@ namespace ECommerce.API.Controllers
         [HttpPatch]
         public async Task<ActionResult<Product[]>> Purchase([FromBody] ProductDTO[] purchaseProducts)
         {
-            _logger.LogInformation("PATCH api/product triggered");
+            //_logger.LogInformation("PATCH api/product triggered");
             List<Product> products = new List<Product>();
             try
             {
@@ -112,12 +114,12 @@ namespace ECommerce.API.Controllers
                     }
                 }
                 return Ok(products);
-                _logger.LogInformation("PATCH api/product completed successfully");
+                //_logger.LogInformation("PATCH api/product completed successfully");
             }
             catch
             {
                 return BadRequest();
-                _logger.LogWarning("PATCH api/product completed with errors");
+                //_logger.LogWarning("PATCH api/product completed with errors");
 
             }
         }
