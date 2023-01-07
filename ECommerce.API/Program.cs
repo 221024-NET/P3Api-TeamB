@@ -43,13 +43,14 @@ if (app.Environment.IsDevelopment())
    });
 }
 
-app.UseCors(options =>
-{
-    options.WithOrigins("https://localhost:4200")
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           .AllowCredentials();
-});
+//app.UseCors(options =>
+//{
+//    options.WithOrigins("https://localhost:4200")
+//           .AllowAnyMethod()
+//           .AllowAnyHeader()
+//           .AllowCredentials();
+//});
+app.UseCors();
 
 app.UseHttpsRedirection();
 
