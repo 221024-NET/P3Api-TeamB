@@ -7,18 +7,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connString = builder.Configuration["ConnectionStrings:ecommDB"];
 
-/*builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
         policy =>
         {
-        policy.WithOrigins("https://ecommerceappteamb.github.io")//,"http://localhost:4200")
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()
-//                   .AllowCredentials()
-                   ;
+            policy.WithOrigins("https://tentacleswagshop.azurewebsites.net")//,"http://localhost:4200")
+
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                      .AllowCredentials();
+                   
         });
-});*/
+});
 
 //builder.Services.AddSingleton<IRepository>
 //    (sp => new SQLRepository(connString, sp.GetRequiredService<ILogger<SQLRepository>>()));
@@ -33,20 +34,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<Context>(opt => opt.UseSqlServer(connString));
 builder.Services.AddScoped<IContext>(provider => provider.GetService<Context>());
 
-var githubapp = "_GithubAppP3TB";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: githubapp,
-                      policy =>
-                      {
-                          //policy.WithOrigins("https://ecommerceappteamb.github.io")//P3UI-TeamB")
-                          policy.AllowAnyOrigin()
-                                .AllowAnyMethod()
-                                .AllowAnyHeader()
-                                .WithExposedHeaders("Access-Control-Allow-Origin");
-                                
-                      });
-});
+//var githubapp = "_GithubAppP3TB";
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(name: githubapp,
+//                      policy =>
+//                      {
+//                       //P3UI-TeamB")policy.WithOrigins("https://ecommerceappteamb.github.io")
+//                        //  policy.AllowAnyOrigin()
+//                                .AllowAnyMethod()
+//                                .AllowAnyHeader()
+//                                .AllowCredentials();
+//                               // .WithExposedHeaders("Access-Control-Allow-Origin");
+
+//                      });
+//});
 
 var app = builder.Build();
 
@@ -83,7 +85,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(githubapp);
-//app.UseCors();
+//app.UseCors(githubapp);
+app.UseCors();
 
 app.Run();
