@@ -12,7 +12,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://tentacleswagshop.azurewebsites.net")//,"http://localhost:4200")
+            policy.WithOrigins(" https://ecommerceappteamb.github.io/P3UI-TeamB")//,"http://localhost:4200")
 
                        .AllowAnyMethod()
                        .AllowAnyHeader()
