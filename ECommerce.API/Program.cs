@@ -12,7 +12,9 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://ecommerceappteamb.github.io/P3UI-TeamB")
+            policy.WithOrigins("https://ecommerceappteamb.github.io",
+                                "https://ecommerceappteamb.github.io/P3UI-TeamB",
+                                "https://webapp-tentacle-shop.azurewebsites.net")
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
