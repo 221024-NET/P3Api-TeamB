@@ -33,8 +33,8 @@ namespace ECommerce.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetOne(int id)
         {
-            //_logger.LogInformation("api/product/{id} triggered");
 
+            //_logger.LogInformation("api/product/{id} triggered");
 
             var item = await _context.GetProductById(id);
 

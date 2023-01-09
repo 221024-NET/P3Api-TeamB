@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using ECommerce.Data;
 using ECommerce.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Core;
@@ -24,6 +25,7 @@ namespace ECommerce.API.Controllers
     }
 
     [ApiController]
+    [EnableCors("_GithubAppP3TB")]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
