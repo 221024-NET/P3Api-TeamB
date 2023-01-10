@@ -32,7 +32,7 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult<Product>> GetOne(int id)
         {
             _logger.LogInformation("api/product/{id} triggered");
-            return new Product(0, "food item", 5, 36, "tastes good, is good", "");
+            //return new Product(0, "food item", 5, 36, "tastes good, is good", "");
 
             var item = await _context.GetProductById(id);
 
